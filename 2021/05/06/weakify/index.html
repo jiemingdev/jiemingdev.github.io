@@ -29,7 +29,7 @@
 <meta property="og:description" content="前言说到@weakify 和 @strongify，大家都不陌生，是用来打破循环引用的宏。就算没用过，也在别的开源项目中见到过，比如SDWebImage和YYKit里面都有这两个宏。 下面列一下几个开源库的实现和我们日常的实现 SDWebImage 1234567891011121314151617181920212223242526#ifndef weakify#define weakify(.">
 <meta property="og:locale">
 <meta property="article:published_time" content="2021-05-06T13:05:04.000Z">
-<meta property="article:modified_time" content="2021-05-13T14:53:43.834Z">
+<meta property="article:modified_time" content="2021-05-13T14:59:04.028Z">
 <meta property="article:author" content="jieming">
 <meta name="twitter:card" content="summary">
 
@@ -191,7 +191,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-13 22:53:43" itemprop="dateModified" datetime="2021-05-13T22:53:43+08:00">2021-05-13</time>
+                <time title="修改时间：2021-05-13 22:59:04" itemprop="dateModified" datetime="2021-05-13T22:59:04+08:00">2021-05-13</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -255,7 +255,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">__weak typeof(self) weakSelf &#x3D; self;</span><br><span class="line">__strong typeof(weakSelf) strongSelf &#x3D; weakSelf;</span><br></pre></td></tr></table></figure>
 
 <p>这三种写法的实现方式都不一样，不过最后的效果是一样的，YYKit的实现是比较直观的，一眼就能看懂，SDWebImage的实现方法看起来比较复杂，下面来分析一下SDWebImage的实现方式。</p>
-<h3 id="SDWebImage-宏定义分析"><a href="#SDWebImage-宏定义分析" class="headerlink" title="SDWebImage 宏定义分析"></a>SDWebImage 宏定义分析</h3><p>SDWebImage的宏定义来自<a href="linkedin.com/in/jspahrsummers/">Justin Spahr Summers</a>的开源项目<a target="_blank" rel="noopener" href="https://github.com/jspahrsummers/libextobjc">libextobjc</a>，他也是ReactiveCocoa和Carthage的作者（真大神啊！！！）。乍一看这个项目还以为是Apple的开源lib项目，不过在<a target="_blank" rel="noopener" href="https://opensource.apple.com/tarballs/">opensource</a>没搜到，然后在Github上找到了。libextobjc是objc的一些拓展与宏的集合, 提供了很多扩展宏，极大地方便了objc代码的编写，感兴趣的可以了解一下。</p>
+<h3 id="SDWebImage-宏定义分析"><a href="#SDWebImage-宏定义分析" class="headerlink" title="SDWebImage 宏定义分析"></a>SDWebImage 宏定义分析</h3><p>SDWebImage的宏定义来自<a target="_blank" rel="noopener" href="https://linkedin.com/in/jspahrsummers/">Justin Spahr Summers</a>的开源项目<a target="_blank" rel="noopener" href="https://github.com/jspahrsummers/libextobjc">libextobjc</a>，他也是ReactiveCocoa和Carthage的作者（真大神啊！！！）。乍一看这个项目还以为是Apple的开源lib项目，不过在<a target="_blank" rel="noopener" href="https://opensource.apple.com/tarballs/">opensource</a>没搜到，然后在Github上找到了。libextobjc是objc的一些拓展与宏的集合, 提供了很多扩展宏，极大地方便了objc代码的编写，感兴趣的可以了解一下。</p>
 <p>SDWebImage的SDmetamacros.h文件就是直接从libextobjc项目中copy过来的。</p>
 <p>一般我们这样使用这两个宏</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@weakify(self)</span><br><span class="line">self.block &#x3D; ^ &#123;</span><br><span class="line">    @strongify(self)</span><br><span class="line">    [self doSomething];</span><br><span class="line">&#125;;</span><br><span class="line">self.block();</span><br></pre></td></tr></table></figure>
