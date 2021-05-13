@@ -21,15 +21,15 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="前言说到@weakify 和 @strongify，大家都不陌生，使用来打破循环引用的宏，就算没用过，也在别的开源项目中见到过，比如SDWebImage和YYKit里面都有这两个宏。 下面列一下几个开源库的实现和我们日常的实现 SDWebImage 1234567891011121314151617181920212223242526#ifndef weakify#define weakify(.">
+  <meta name="description" content="前言说到@weakify 和 @strongify，大家都不陌生，是用来打破循环引用的宏。就算没用过，也在别的开源项目中见到过，比如SDWebImage和YYKit里面都有这两个宏。 下面列一下几个开源库的实现和我们日常的实现 SDWebImage 1234567891011121314151617181920212223242526#ifndef weakify#define weakify(.">
 <meta property="og:type" content="article">
 <meta property="og:title" content="理解@weakify和@strongify">
 <meta property="og:url" content="http://example.com/2021/05/06/weakify/index.html">
 <meta property="og:site_name" content="jieming’s blog">
-<meta property="og:description" content="前言说到@weakify 和 @strongify，大家都不陌生，使用来打破循环引用的宏，就算没用过，也在别的开源项目中见到过，比如SDWebImage和YYKit里面都有这两个宏。 下面列一下几个开源库的实现和我们日常的实现 SDWebImage 1234567891011121314151617181920212223242526#ifndef weakify#define weakify(.">
+<meta property="og:description" content="前言说到@weakify 和 @strongify，大家都不陌生，是用来打破循环引用的宏。就算没用过，也在别的开源项目中见到过，比如SDWebImage和YYKit里面都有这两个宏。 下面列一下几个开源库的实现和我们日常的实现 SDWebImage 1234567891011121314151617181920212223242526#ifndef weakify#define weakify(.">
 <meta property="og:locale">
 <meta property="article:published_time" content="2021-05-06T13:05:04.000Z">
-<meta property="article:modified_time" content="2021-05-06T14:28:40.059Z">
+<meta property="article:modified_time" content="2021-05-13T14:53:43.834Z">
 <meta property="article:author" content="jieming">
 <meta name="twitter:card" content="summary">
 
@@ -183,10 +183,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-05-06 21:05:04 / 修改时间：22:28:40" itemprop="dateCreated datePublished" datetime="2021-05-06T21:05:04+08:00">2021-05-06</time>
+              <time title="创建时间：2021-05-06 21:05:04" itemprop="dateCreated datePublished" datetime="2021-05-06T21:05:04+08:00">2021-05-06</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-13 22:53:43" itemprop="dateModified" datetime="2021-05-13T22:53:43+08:00">2021-05-13</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -217,7 +223,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>6.2k</span>
+              <span>6.3k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -236,7 +242,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>说到@weakify 和 @strongify，大家都不陌生，使用来打破循环引用的宏，就算没用过，也在别的开源项目中见到过，比如SDWebImage和YYKit里面都有这两个宏。</p>
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>说到@weakify 和 @strongify，大家都不陌生，是用来打破循环引用的宏。就算没用过，也在别的开源项目中见到过，比如SDWebImage和YYKit里面都有这两个宏。</p>
 <p>下面列一下几个开源库的实现和我们日常的实现</p>
 <p><strong><code>SDWebImage</code></strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">#ifndef weakify</span><br><span class="line">#define weakify(...) \</span><br><span class="line">sd_keywordify \</span><br><span class="line">metamacro_foreach_cxt(sd_weakify_,, __weak, __VA_ARGS__)</span><br><span class="line">#endif</span><br><span class="line"></span><br><span class="line">#ifndef strongify</span><br><span class="line">#define strongify(...) \</span><br><span class="line">sd_keywordify \</span><br><span class="line">_Pragma(&quot;clang diagnostic push&quot;) \</span><br><span class="line">_Pragma(&quot;clang diagnostic ignored \&quot;-Wshadow\&quot;&quot;) \</span><br><span class="line">metamacro_foreach(sd_strongify_,, __VA_ARGS__) \</span><br><span class="line">_Pragma(&quot;clang diagnostic pop&quot;)</span><br><span class="line">#endif</span><br><span class="line"></span><br><span class="line">#define sd_weakify_(INDEX, CONTEXT, VAR) \</span><br><span class="line">CONTEXT __typeof__(VAR) metamacro_concat(VAR, _weak_) &#x3D; (VAR);</span><br><span class="line"></span><br><span class="line">#define sd_strongify_(INDEX, VAR) \</span><br><span class="line">__strong __typeof__(VAR) VAR &#x3D; metamacro_concat(VAR, _weak_);</span><br><span class="line"></span><br><span class="line">#if DEBUG</span><br><span class="line">#define sd_keywordify autoreleasepool &#123;&#125;</span><br><span class="line">#else</span><br><span class="line">#define sd_keywordify try &#123;&#125; @catch (...) &#123;&#125;</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
@@ -248,37 +254,41 @@
 <p><strong><code>日常写法</code></strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">__weak typeof(self) weakSelf &#x3D; self;</span><br><span class="line">__strong typeof(weakSelf) strongSelf &#x3D; weakSelf;</span><br></pre></td></tr></table></figure>
 
-<p>这三种写法的实现方式都不一样，不过最后的效果是一样的，YYKit的实现是比较直观的，一眼就能看懂，SDWebImage的实现方法看起来比较复杂，下面我们主要讲一下SDWebImage的这种实现方法。</p>
-<h3 id="SDWebImage-宏定义分析"><a href="#SDWebImage-宏定义分析" class="headerlink" title="SDWebImage 宏定义分析"></a>SDWebImage 宏定义分析</h3><p>SDWebImage的宏定义来自<a href="linkedin.com/in/jspahrsummers/">Justin Spahr Summers</a>的开源项目<a target="_blank" rel="noopener" href="https://github.com/jspahrsummers/libextobjc">libextobjc</a>，他也是ReactiveCocoa和Carthage的作者（真大神啊！！！）。咋一看这个项目还以为是Apple的开源lib项目，去<a target="_blank" rel="noopener" href="https://opensource.apple.com/tarballs/">opensource</a>一搜，没搜到，然后在Github上找到了。libextobjc是objc的一些拓展与宏的集合, 提供了恩多扩展宏，极大地方便了objc代码的编写，感兴趣的可以了解一下。</p>
+<p>这三种写法的实现方式都不一样，不过最后的效果是一样的，YYKit的实现是比较直观的，一眼就能看懂，SDWebImage的实现方法看起来比较复杂，下面来分析一下SDWebImage的实现方式。</p>
+<h3 id="SDWebImage-宏定义分析"><a href="#SDWebImage-宏定义分析" class="headerlink" title="SDWebImage 宏定义分析"></a>SDWebImage 宏定义分析</h3><p>SDWebImage的宏定义来自<a href="linkedin.com/in/jspahrsummers/">Justin Spahr Summers</a>的开源项目<a target="_blank" rel="noopener" href="https://github.com/jspahrsummers/libextobjc">libextobjc</a>，他也是ReactiveCocoa和Carthage的作者（真大神啊！！！）。乍一看这个项目还以为是Apple的开源lib项目，不过在<a target="_blank" rel="noopener" href="https://opensource.apple.com/tarballs/">opensource</a>没搜到，然后在Github上找到了。libextobjc是objc的一些拓展与宏的集合, 提供了很多扩展宏，极大地方便了objc代码的编写，感兴趣的可以了解一下。</p>
 <p>SDWebImage的SDmetamacros.h文件就是直接从libextobjc项目中copy过来的。</p>
 <p>一般我们这样使用这两个宏</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@weakify(self)</span><br><span class="line">self.block &#x3D; ^ &#123;</span><br><span class="line">    @strongify(self)</span><br><span class="line">    [self doSomething];</span><br><span class="line">&#125;;</span><br><span class="line">self.block();</span><br></pre></td></tr></table></figure>
-<p>不过weakify和strongify定义的是多参数宏，所以我们也可以用来做多参数</p>
+<p>不过这里的weakify和strongify定义的是多参数宏，所以我们也可以用来做多参数</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@weakify(self, self1)</span><br><span class="line">self.block &#x3D; ^ &#123;</span><br><span class="line">    @strongify(self, self1)</span><br><span class="line">    [self doSomething];</span><br><span class="line">    [self1 doSomething];</span><br><span class="line">&#125;;</span><br><span class="line">self.block();</span><br></pre></td></tr></table></figure>
 
-<p>下面我们对weakify进行宏展开，来看一下它最终是什么样子，当然，如果对宏展开不熟悉的同学也可以利用Xcode的Preprocessed模式来查看预编译之后的宏，也可以看到完整的宏展开，就是没有宏展开的过程。</p>
+<p>下面我们对weakify进行宏展开，来看一下它最终是什么样子，当然，如果对宏展开不熟悉的同学，也可以用下面两种方法来查看完整的宏展开</p>
+<ul>
+<li>使用Xcode的Preprocessed模式来查看</li>
+<li>使用clang命令查看 <code>clang -E xxx.m</code></li>
+</ul>
 <p><strong>sd_keywordify</strong></p>
 <p>这个宏就是autoreleasepool或者try catch，没啥说的，后面会讲一下为啥要这样写。</p>
 <p><strong>metamacro_foreach_cxt(sd_weakify_,, __weak, <strong>VA_ARGS</strong>)</strong></p>
-<p>这个宏比较复杂，要带入源码看一下，下面是这个宏涉及到的主要的几个宏定义，写了一些注解，便于理解</p>
+<p>这个宏比较复杂，下面是这个宏涉及到的主要的几个宏定义，写了一些注解，便于理解</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; __VA_ARGS__ 这是预定义宏，代表... 传进来的所有参数</span><br><span class="line">#define metamacro_foreach_cxt(MACRO, SEP, CONTEXT, ...) \</span><br><span class="line">        metamacro_concat(metamacro_foreach_cxt, metamacro_argcount(__VA_ARGS__))(MACRO, SEP, CONTEXT, __VA_ARGS__)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 参数拼接</span><br><span class="line">#define metamacro_concat_(A, B) A ## B  </span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; [1, 20] 最少一个参数，自多20个参数，必须传入参数，否则会报错</span><br><span class="line">#define metamacro_argcount(...) \</span><br><span class="line">        metamacro_at(20, __VA_ARGS__, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 这里根据参数个数生成了metamacro_foreach_cxt1 到 metamacro_foreach_cxt20 </span><br><span class="line">&#x2F;&#x2F; 20个宏定义，是一串类似斐波那契数列的宏</span><br><span class="line">#define metamacro_foreach_cxt1(MACRO, SEP, CONTEXT, _0) MACRO(0, CONTEXT, _0)</span><br></pre></td></tr></table></figure>
 
-<p>可以看到这个宏分两部分，先把前半部分进行宏展开，<code>metamacro_argcount(__VA_ARGS__)</code>的值是1，所以得到下面的宏</p>
+<p>可以看到这个宏分两部分，先把前半部分进行宏展开，<code>metamacro_argcount(__VA_ARGS__)</code>的值是1，所以前半部分宏展开之后，可以得到下面的宏</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">metamacro_foreach_cxt1(MACRO, SEP, CONTEXT, __VA_ARGS__)</span><br></pre></td></tr></table></figure>
-<p>代入到上面的<code>metamacro_foreach_cxt1</code>宏定义进行宏展开，可以得到下面的代码</p>
+<p>代入到上面的<code>metamacro_foreach_cxt1</code>宏定义进行宏展开，可以得到下面这个完整的宏展开</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">MACRO &#x3D; sd_weakify_ &#x3D; </span><br><span class="line">#define sd_weakify_(INDEX, CONTEXT, VAR) \</span><br><span class="line">CONTEXT __typeof__(VAR) metamacro_concat(VAR, _weak_) &#x3D; (VAR);</span><br><span class="line"></span><br><span class="line">INDEX &#x3D; 0</span><br><span class="line">CONTEXT &#x3D; __weak</span><br><span class="line">VAR &#x3D; _0 &#x3D; self &#x2F;&#x2F; 第一个参数</span><br><span class="line"></span><br><span class="line">__weak __typeof__(self) self_weak_ &#x3D; (self);</span><br></pre></td></tr></table></figure>
 
-<p>同理展开<code>strongify</code>也可以得到下面的代码，跟<code>weakify</code>的区别是，它没用<code>CONTEXT</code>，而是默认写死了<code>__strong</code></p>
+<p>同理展开<code>strongify</code>也可以得到下面的代码，跟<code>weakify</code>的区别是，它没用<code>CONTEXT</code>的入参，而是默认写死了<code>__strong</code></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__strong __typeof__(self) self &#x3D; (self_weak_);</span><br></pre></td></tr></table></figure>
 
-<p>由此我们可以得到完整的宏展开为</p>
+<p>由此我们可以得到两个宏的完整的宏展开为</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">weakify: autoreleasepool &#123;&#125; __weak __typeof__(self) self_weak_ &#x3D; (self);</span><br><span class="line">strongify: autoreleasepool &#123;&#125; __strong __typeof__(self) self &#x3D; (self_weak_);</span><br></pre></td></tr></table></figure>
 
 
-<p>在正常编码中，我们一般只会weak一个对象，所以大可不必写的这么复杂<br>我们可以将这两个宏简化成两个通俗易懂的宏</p>
+<p>在正常编码中，我们一般只会weak一个对象，所以大可不必像libextobjc这样写的这么复杂。我们可以按照libextobjc的定义将这两个宏简化成通俗易懂的宏</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#define weakify(obj)</span><br><span class="line">autoreleasepool &#123;&#125; __weak __typeof__(obj) obj##_weak_ &#x3D; (obj);</span><br><span class="line"></span><br><span class="line"># define strongify(obj)</span><br><span class="line">autoreleasepool &#123;&#125; __strong __typeof__(obj) obj &#x3D; (obj##_weak_);</span><br></pre></td></tr></table></figure>
 
-<h3 id="几个问题"><a href="#几个问题" class="headerlink" title="几个问题"></a>几个问题</h3><p>那么我们接下来看几个问题</p>
+<h3 id="几个问题"><a href="#几个问题" class="headerlink" title="几个问题"></a>几个问题</h3><p>完成宏展开后，来看几个问题</p>
 <ul>
 <li>1、为什么要在前面加上autoreleasepool 或者 try catch？</li>
 <li>2、为什么要在Debug环境下使用autoreleasepool，Release环境下使用try catch？</li>
@@ -289,20 +299,20 @@
 <p>它的目的就只是为了在使用weakify的时候加上@，使其使用的时候可以写成@weakify，没有别的作用</p>
 </blockquote>
 <h4 id="2、为什么要在Debug环境下使用autoreleasepool，Release环境下使用try-catch？"><a href="#2、为什么要在Debug环境下使用autoreleasepool，Release环境下使用try-catch？" class="headerlink" title="2、为什么要在Debug环境下使用autoreleasepool，Release环境下使用try catch？"></a>2、为什么要在Debug环境下使用autoreleasepool，Release环境下使用try catch？</h4><blockquote>
-<p>因为debug环境下，空try catch会报编译警告，而且会抑制Clang的报错能力，只会报警告。<br>而autoreleasepool创建会造成系统开销，因为编译器不会LLVM不会优化空@autoreleasepool {}，为了不产生不必要的开销，不在正式环境使用它。所以，为了更好的性能和编译效果，进行了折中处理。可参考libextobjc中的注释</p>
+<p>因为debug环境下，空try catch会报编译警告，而且会抑制Clang的报错能力，只会报警告。<br>而autoreleasepool创建会造成系统开销，因为LLVM不会优化空@autoreleasepool {}，为了不产生不必要的开销，不在正式环境使用它。所以，为了更好的性能和编译效果，进行了折中处理。可参考libextobjc中的注释</p>
 </blockquote>
-<p>这里顺便说一下，一般我们在for循环的时候会使用@autoreleasepool {} 来防止创建过多临时变量引起的OOM崩溃或者内存暴增引起的卡顿，但是有些临时变量是不会增加内存的，比如TaggedPointer类型(NSString等)和基本类型(int等)，所以不要盲目的在for循环里扔一个@autoreleasepool，毕竟它也是要开销系统资源的啊！</p>
+<p>这里顺便说一下，一般我们在循环的时候会使用@autoreleasepool {}或者数组的枚举遍历器， 来防止创建过多临时变量引起的OOM崩溃或者内存暴增引起的卡顿，但是有些临时变量是不会增加内存的，比如TaggedPointer类型(NSString等)和基本类型(int等)，所以不要盲目的在for循环里扔一个@autoreleasepool，毕竟它也是要开销系统资源的啊！</p>
 <h4 id="3、-typeof-typeof-typeof-有啥区别吗？"><a href="#3、-typeof-typeof-typeof-有啥区别吗？" class="headerlink" title="3、__typeof__ __typeof  typeof 有啥区别吗？"></a>3、<code>__typeof__ __typeof  typeof</code> 有啥区别吗？</h4><blockquote>
-<p>这三个函数没啥区别，他们都返回当前对象的类型，都是<a target="_blank" rel="noopener" href="http://gcc.gnu.org/onlinedocs/gcc/Alternate-Keywords.html#Alternate-Keywords">标准C的扩展</a>，只不过不同的C版本对他们的支持不一样，目前clang默认编译的C版本为GNU99，它是支持typeof的，所以我们使用typeof是没有问题的，不过其他大部分版本都是不支持typeof的。为了保险起见，使用__typeof__是更好的选择</p>
+<p>这三个函数没啥区别，他们都返回当前对象的类型，都是<a target="_blank" rel="noopener" href="http://gcc.gnu.org/onlinedocs/gcc/Alternate-Keywords.html#Alternate-Keywords">标准C的扩展</a>，只不过不同的C版本对他们的支持不一样，目前clang默认编译的C版本为GNU99，它是支持typeof的，所以我们使用typeof是没有问题的，不过其他大部分C版本都是不支持typeof的。为了保险起见，使用__typeof__是更好的选择，它支持大部分的C版本。</p>
 </blockquote>
 <h4 id="4、为什么这个宏展开的strongify定义跟我们平常写的不一样？"><a href="#4、为什么这个宏展开的strongify定义跟我们平常写的不一样？" class="headerlink" title="4、为什么这个宏展开的strongify定义跟我们平常写的不一样？"></a>4、为什么这个宏展开的strongify定义跟我们平常写的不一样？</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">@strongify  __strong __typeof__(self) self &#x3D; self_weak_; or __typeof(self) self &#x3D; self_weak_;</span><br><span class="line">日常写法     __strong typeof(self_weak_) self_strong_ &#x3D; self_weak_;</span><br></pre></td></tr></table></figure>
 <ul>
-<li><p>第一个区别是<code>__strong</code> 和 <code>没有__strong</code>的区别，__weak 和 __strong 属于所有权修饰符，<strong>如果不写，默认的所有权修饰符是__strong。所以__strong 可写可不写，不过还是建议要写</strong>。就像@property的默认属性assign和strong，万一苹果哪天改了默认修饰符，那就炸了。不过对于宏来说影响不大。</p>
+<li><p>第一个区别是<code>__strong</code> 和 <code>没有__strong</code>的区别，__weak 和 __strong 属于所有权修饰符，<strong>如果不写，默认的所有权修饰符是__strong。所以__strong 可写可不写，不过还是建议要写</strong>。就像@property的默认属性修饰符为assign和strong，不过我们在定义的时候还是会显式写明修饰符，不然万一哪天苹果抽风改了默认修饰符，那就炸了。不过对于宏来说影响不大，只是写上会更好。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">@property (nonatomic) CGFloat _f; &#x2F;&#x2F; 基本类型默认修饰符为 readwriter, assign</span><br><span class="line">@property (nonatomic) NSString _s; &#x2F;&#x2F; OC对象默认修饰符为 readwriter, strong</span><br></pre></td></tr></table></figure></li>
 <li><p>第二个区别是<code>__typeof__(self)</code>和<code>typeof(self_weak_)</code>的区别，上面说到了，__typeof__和typeof都是返回入参对象的类型，而self和self_weak_的类型是一样的，所以这两种写法是一样的，不过还是建议按照日常写法，用self_weak_去取类型。</p>
 </li>
 </ul>
-<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>综上，贴上个人认为比较好的实现方法</p>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>综上，贴上个人认为比较通用且安全的实现方式</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#ifndef weakify</span><br><span class="line">    #define weakify(object) __weak __typeof__(object) weak_##object &#x3D; object;</span><br><span class="line">#endif</span><br><span class="line"></span><br><span class="line">#ifndef strongify</span><br><span class="line">    #define strongify(object) __strong __typeof__(weak_##object) object &#x3D; weak_##object;</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
 
 
